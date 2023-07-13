@@ -2,7 +2,12 @@ import pygame as pg
 from time import sleep
 from random import randint
 pg.init()
-window=pg.display.set_mode((720,720))
+window=pg.display.set_mode((1000,720))
+button_x=730
+button_y=140
+button_height=100
+button_width=100
+button_color=(180,140,140)
 pg.display.set_caption("Snakes and Ladders")
 running = True
 class img_loader:
@@ -13,48 +18,34 @@ class img_loader:
         window.blit(image, (180, 100))
     color=[180,180,195]
     def font():
-        font = pg.font.Font(None, 36)
-class dice:
-    dice_1=pg.transform.smoothscale(pg.image.load("resources/dice_01.png"),[100,100])
-    dice_2=pg.transform.smoothscale(pg.image.load("resources/dice_02.png"),[100,100])
-    dice_3=pg.transform.smoothscale(pg.image.load("resources/dice_03.png"),[100,100])
-    dice_4=pg.transform.smoothscale(pg.image.load("resources/dice_04.png"),[100,100])
-    dice_5=pg.transform.smoothscale(pg.image.load("resources/dice_05.png"),[100,100])
-    dice_6=pg.transform.smoothscale(pg.image.load("resources/dice_06.png"),[100,100])
-    dice_tuple=(dice_1,dice_2,dice_3,dice_4,dice_5,dice_6)
-    def rolling(self,src):
-        for self.i in range(6):
-            src.load()
-            self.x=20
-            self.y=20
-            window.blit(self.dice_tuple[randint(0,5)],(self.x,self.y))
-            pg.display.flip()
-            sleep(0.5)
-        del self.i
-        sleep(1)
-        self.roll(src)
-    def roll(self,src):
-        self.roll=randint(0,5)
-        for self.i in range (3):
-            src.load()
-            pg.display.flip()
-            sleep(1)
-            self.x=20
-            self.y=20
-            window.blit(self.dice_tuple[self.roll],(self.x,self.y))
-            pg.display.flip()
-            sleep(1)
-        del self.i
-        return self.roll
+        font_36 = pg.font.Font(None, 36)
+        font_70 = pg.font.Font(None, 70)
+        
+def win():
+    win_rect=pg.draw.rect(window ,(255,255,255), (0, 120, 1000,600))
+    if p1.square_no==100:
+        win_text = "Player 1 Wins !!!"
+    else:
+        win_text = "Player 2 Wins !!!"
+    
+    text_surface2 = img_loader.font_70.render("ROLL", True, (randint(0,255), randint(0,255), randint(0,255)))
+    window.blit(text_surface2,(450,240))
+is_clicked=True
 pg_img_loader=img_loader()
-dice1=dice()
 while running:
     for event in pg.event.get():
         if event.type==pg.QUIT:
             running=False
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            if button_rect.collidepoint(event.pos) and not is_clicked:
+                is_clicked = True
+                print("Button clicked!")
+
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            is_clicked = False
+
         pg_img_loader.load()
+        button_rect=pg.draw.rect(window ,button_color, (button_x, button_y, button_width, button_height))
+        win()
         pg.display.flip()
-        if event.type == pg.MOUSEBUTTONDOWN:
-            dice1.rolling(pg_img_loader)
-        pg.display.update()
 pg.quit()
