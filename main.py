@@ -1,10 +1,11 @@
 import pygame as pg
 from time import sleep
 from random import randint
-choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
+choice=0
+'''int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
 while choice not in [0,1]:
     print("INVALID INPUT \n")
-    choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
+    choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))'''
 ladder={4:25,21:39,29:74,43:76,63:80,71:89}
 snake={30:7,47:15,56:19,73:51,82:42,92:75,98:55}
 pg.init()
@@ -53,16 +54,40 @@ class player:
                 pg.display.flip()
         self.square_no+=1
         del self.i
-    def move_multiple(self,steps,player_2):
+    def move_multiple(self,steps,player_2,img):
         for self.i in range(steps):
             if self.square_no==100:
                 break
             self.move(player_2,pg_img_loader)
         if ladder.get(self.square_no,0):
-            self.target=ladder.get(self.square_no,0)
-            self.current_posn=[185+36*((self.square_no-1)%10),425-36*((self.square_no-1)//10)]
-
-            self.square_no=self.target
+            self.target_square_no=ladder.get(self.square_no,0)
+            self.target_posn=[185+36*((ladder.get(self.square_no,0)-1)%10),425-36*((ladder.get(self.square_no,0)-1)//10)]
+            while self.target_posn!=[self.pos_x,self.pos_y]:
+                if self.pos_x>self.target_posn[0]:
+                    self.pos_x-=1
+                    img.load()
+                    player_2.img_load()
+                    window.blit(self.image,[self.pos_x,self.pos_y])
+                    pg.display.flip()
+                elif self.pos_x<self.target_posn[0]:
+                    self.pos_x+=1
+                    img.load()
+                    player_2.img_load()
+                    window.blit(self.image,[self.pos_x,self.pos_y])
+                    pg.display.flip()
+                if self.pos_y>self.target_posn[1]:
+                    self.pos_y-=1
+                    img.load()
+                    player_2.img_load()
+                    window.blit(self.image,[self.pos_x,self.pos_y])
+                    pg.display.flip()
+                elif self.pos_y<self.target_posn[1]:
+                    self.pos_y+=1
+                    img.load()
+                    player_2.img_load()
+                    window.blit(self.image,[self.pos_x,self.pos_y])
+                    pg.display.flip()
+            self.square_no=self.target_square_no
 def win():
     pg.draw.rect(window ,(205,205,205), (0, 120, 1000,400))
     if p1.square_no>=100:
@@ -93,7 +118,8 @@ class dice:
         del self.i
         return self.roll(src)
     def roll(self,src):
-        self.roll_no=randint(0,5)
+        #self.roll_no=randint(0,5)
+        self.roll_no=2
         for self.i in range (3):
             src.load()
             p1.img_load()
@@ -111,16 +137,16 @@ class interchange_2_player:
     turn=1
     def swapper(self,p1,p2):
         if self.turn:
-            p1.move_multiple(dice.rolling(pg_img_loader)+1,p2)
+            p1.move_multiple(dice.rolling(pg_img_loader)+1,p2,pg_img_loader)
             self.turn-=1
         else:
-            p2.move_multiple(dice.rolling(pg_img_loader)+1,p1)
+            p2.move_multiple(dice.rolling(pg_img_loader)+1,p1,pg_img_loader)
             self.turn+=1
 class interchange_computer:
     def swapper(self,p1,p2):
-        p1.move_multiple(dice.rolling(pg_img_loader)+1,p2)
+        p1.move_multiple(dice.rolling(pg_img_loader)+1,p2,pg_img_loader)
         sleep(2)
-        p2.move_multiple(dice.rolling(pg_img_loader)+1,p1)
+        p2.move_multiple(dice.rolling(pg_img_loader)+1,p1,pg_img_loader)
 if choice:
     player_change=interchange_2_player()
 else:
