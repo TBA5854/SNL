@@ -9,7 +9,7 @@ while choice not in [0,1]:
 ladder={4:25,21:39,29:74,43:76,63:80,71:89}
 snake={30:7,47:15,56:19,73:51,82:42,92:75,98:55}
 pg.init()
-fps=60.0
+fps=60
 clockk=pg.time.Clock()
 window=pg.display.set_mode((1000,720))
 pg.display.set_caption("Snakes and Ladders")
@@ -59,30 +59,30 @@ class player:
             if self.square_no==100:
                 break
             self.move(player_2,pg_img_loader)
-        if ladder.get(self.square_no,0):
-            self.target_square_no=ladder.get(self.square_no,0)
-            self.target_posn=[185+36*((ladder.get(self.square_no,0)-1)%10),425-36*((ladder.get(self.square_no,0)-1)//10)]
+        if ladder.get(self.square_no,0) or snake.get(self.square_no,0):
+            if ladder.get(self.square_no,0):
+                self.target_square_no=ladder.get(self.square_no,0)
+            else:
+                self.target_square_no=snake.get(self.square_no,0)
+            if ((self.target_square_no-1)//10)%2==0:
+                self.target_posn=[185+36*((self.target_square_no-1)%10),425-36*((self.target_square_no-1)//10)]
+            else:
+                self.target_posn=[509-36*((self.target_square_no-1)%10),425-36*((self.target_square_no-1)//10)]
+            self.current_x=self.pos_x
+            self.current_y=self.pos_y
+            self.change_of_x=(self.target_posn[0]-self.pos_x)/60
+            self.change_of_y=(self.target_posn[1]-self.pos_y)/60
             while self.target_posn!=[self.pos_x,self.pos_y]:
-                if self.pos_x>self.target_posn[0]:
-                    self.pos_x-=1
+                if self.pos_x!=self.target_posn[0]:
+                    self.current_x+=(self.change_of_x)
+                    self.pos_x=round(self.current_x)
                     img.load()
                     player_2.img_load()
                     window.blit(self.image,[self.pos_x,self.pos_y])
                     pg.display.flip()
-                elif self.pos_x<self.target_posn[0]:
-                    self.pos_x+=1
-                    img.load()
-                    player_2.img_load()
-                    window.blit(self.image,[self.pos_x,self.pos_y])
-                    pg.display.flip()
-                if self.pos_y>self.target_posn[1]:
-                    self.pos_y-=1
-                    img.load()
-                    player_2.img_load()
-                    window.blit(self.image,[self.pos_x,self.pos_y])
-                    pg.display.flip()
-                elif self.pos_y<self.target_posn[1]:
-                    self.pos_y+=1
+                if self.pos_y!=self.target_posn[1]:
+                    self.current_y+=(self.change_of_y)
+                    self.pos_y=round(self.current_y)
                     img.load()
                     player_2.img_load()
                     window.blit(self.image,[self.pos_x,self.pos_y])
@@ -114,7 +114,7 @@ class dice:
             self.y=20
             window.blit(self.dice_tuple[randint(0,5)],(self.x,self.y))
             pg.display.flip()
-            sleep(0.5)
+            #sleep(0.5)
         del self.i
         return self.roll(src)
     def roll(self,src):
@@ -125,12 +125,12 @@ class dice:
             p1.img_load()
             p2.img_load()
             pg.display.flip()
-            sleep(1)
+            #sleep(1)
             self.x=20
             self.y=20
             window.blit(self.dice_tuple[self.roll_no],(self.x,self.y))
             pg.display.flip()
-            sleep(1)
+            #sleep(1)
         del self.i
         return self.roll_no
 class interchange_2_player:
@@ -145,8 +145,8 @@ class interchange_2_player:
 class interchange_computer:
     def swapper(self,p1,p2):
         p1.move_multiple(dice.rolling(pg_img_loader)+1,p2,pg_img_loader)
-        sleep(2)
-        p2.move_multiple(dice.rolling(pg_img_loader)+1,p1,pg_img_loader)
+        ##sleep(2)
+        #p2.move_multiple(dice.rolling(pg_img_loader)+1,p1,pg_img_loader)
 if choice:
     player_change=interchange_2_player()
 else:
@@ -171,11 +171,11 @@ while running:
             running=False
     if(p1.square_no>=100):
         win()
-        sleep(1)
+        #sleep(1)
         continue
     if(p2.square_no>=100):
         win()
-        sleep(1)
+        #sleep(1)
         continue
     pg_img_loader.load()
     p1.img_load()
@@ -186,6 +186,7 @@ while running:
         if button_rect.collidepoint(event.pos) and not is_clicked:
             is_clicked = True
             print("Button clicked!")
+            print(p1.pos_x,p1.pos_y,p1.square_no)
             player_change.swapper(p1,p2)
     if event.type == pg.MOUSEBUTTONUP and event.button == 1:
         is_clicked = False
