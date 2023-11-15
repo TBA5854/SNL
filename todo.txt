@@ -1,0 +1,5 @@
+[]1.fix main loop
+[]2.add loading screen
+[]3.fix animation of dice
+[]4.if user clicks close when game is loading , then it should close immmediately ==> integrate for loop inside main loop with a extra var
+[]5.confirmation dialog box

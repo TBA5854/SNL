@@ -1,7 +1,9 @@
 import pygame as pg
 from time import sleep
 from random import randint
-choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
+
+
+choice=0#int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
 while choice not in [0,1]:
     print("\nINVALID INPUT!!!\n")
     choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
@@ -9,7 +11,7 @@ if choice:
     name_1=input("Enter Player 1 Name \n>>")
     name_2=input("Enter Player 2 Name \n>>")
 else:
-    name_1=input("Enter Player 1 Name \n>>")
+    name_1="TBA"#input("Enter Player 1 Name \n>>")
     name_2="Computer"
 ladder={4:25,21:39,29:74,43:76,63:80,71:89}
 snake={30:7,47:15,56:19,73:51,82:42,92:75,98:55}
@@ -20,6 +22,77 @@ clockk=pg.time.Clock()
 window=pg.display.set_mode((1000,720))
 pg.display.set_caption("Snakes and Ladders")
 running = True
+is_started=False
+
+class loading_screen:
+    def __init__(self):
+        pass
+    def load(self):
+        global is_started
+        is_started=True
+
+loader=loading_screen()
+
+class animations:
+    i=0
+    t=3
+    blinking_i=0
+    blinking_t=1
+    blinking_q=0
+    def blinking(self,font_engine,text,r,g,b,coords):
+        if self.blinking_i>40:self.blinking_i,self.blinking_t=40,-1
+        if self.blinking_i<0:self.blinking_i,self.blinking_t=0,1
+        self.blinking_i+=self.blinking_t
+        if self.blinking_t>0:window.blit(font_engine.render(text,True,[r,g,b]),coords)
+    def breathing(self,font_engine,text,r,g,b,coords):
+        if max(r,g,b)>=255:self.t=-1*3
+        if min(r,g,b)<=0:self.t=+1*3
+        self.i+=self.t
+        window.blit(font_engine.render(text,True,[r+self.i,g+self.i,b+self.i]),coords)
+
+
+animator=animations()
+
+
+
+def main_loop():
+    global is_clicked,is_both_players_on_same_square
+    if(p1.square_no>=100):
+        win()
+        sleep(1)
+        return
+    if(p2.square_no>=100):
+        win()
+        sleep(1)
+        return
+    pg_img_loader.load()
+    p1.img_load()
+    p2.img_load()
+    button_rect=pg.draw.rect(window ,button_color, (button_x, button_y, button_width, button_height))
+    pg.draw.rect(window,pg_img_loader.color,(730,140,18,18))
+    pg.draw.circle(window,button_color,(730+18,140+18),18)#1
+    pg.draw.rect(window,pg_img_loader.color,(830-18,140,18,18))
+    pg.draw.circle(window,button_color,(830-18,140+18),18)#2
+    pg.draw.rect(window,pg_img_loader.color,(730,240-18,18,18))
+    pg.draw.circle(window,button_color,(730+18,240-18),18)#3
+    pg.draw.rect(window,pg_img_loader.color,(830-18,240-18,18,18))
+    pg.draw.circle(window,button_color,(830-18,240-18),18)#4
+    animator.blinking(pg_img_loader.font_36,"ROLL",0,0,0,(750,178))
+    if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+        if button_rect.collidepoint(event.pos) and not is_clicked:
+            is_clicked = True
+            if is_both_players_on_same_square:
+                p2.pos_y-=2
+                p1.pos_y+=2
+                is_both_players_on_same_square=0
+            player_change.swapper(p1,p2)
+            if p1.square_no==p2.square_no:
+                is_both_players_on_same_square=1
+                p1.pos_y-=2
+                p2.pos_y+=2
+    if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+        is_clicked = False
+    clockk.tick(fps)
 class img_loader:
     color=[180,180,195]
     def load(self):
@@ -190,6 +263,7 @@ button_x=730
 button_y=140
 button_height=100
 button_width=100
+#button center ==> (780,190) , (141.4)
 button_color=(255,255,55)
 is_clicked=False
 pg_img_loader=img_loader()
@@ -200,36 +274,11 @@ while running:
     for event in pg.event.get():
         if event.type==pg.QUIT:
             running=False
-    if(p1.square_no>=100):
-        win()
-        sleep(1)
-        continue
-    if(p2.square_no>=100):
-        win()
-        sleep(1)
-        continue
-    pg_img_loader.load()
-    p1.img_load()
-    p2.img_load()
-    button_rect=pg.draw.rect(window ,button_color, (button_x, button_y, button_width, button_height))
-    roll_button=pg_img_loader.font_36.render("ROLL", True, (0,0,0))
-    window.blit(roll_button,(750,178))
-    pg.display.flip()
-    if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-        if button_rect.collidepoint(event.pos) and not is_clicked:
-            is_clicked = True
-            if is_both_players_on_same_square:
-                p2.pos_y-=2
-                p1.pos_y+=2
-                is_both_players_on_same_square=0
-            player_change.swapper(p1,p2)
-            if p1.square_no==p2.square_no:
-                is_both_players_on_same_square=1
-                p1.pos_y-=2
-                p2.pos_y+=2
-    if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-        is_clicked = False
-        pass
-    clockk.tick(fps)
+    if not is_started:
+        loader.load()
+    else:
+        main_loop()
+        pg.display.flip()
+
 pg.quit()
 print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")
