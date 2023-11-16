@@ -1,11 +1,6 @@
-from pdb import run
 import pygame as pg
 from time import sleep
 from random import randint
-import threading
-
-
-
 
 
 choice=0#int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
@@ -58,6 +53,46 @@ class animations:
 
 animator=animations()
 
+
+
+def main_loop():
+    global is_clicked,is_both_players_on_same_square
+    if(p1.square_no>=100):
+        win()
+        sleep(1)
+        return
+    if(p2.square_no>=100):
+        win()
+        sleep(1)
+        return
+    pg_img_loader.load()
+    p1.img_load()
+    p2.img_load()
+    button_rect=pg.draw.rect(window ,button_color, (button_x, button_y, button_width, button_height))
+    pg.draw.rect(window,pg_img_loader.color,(730,140,18,18))
+    pg.draw.circle(window,button_color,(730+18,140+18),18)#1
+    pg.draw.rect(window,pg_img_loader.color,(830-18,140,18,18))
+    pg.draw.circle(window,button_color,(830-18,140+18),18)#2
+    pg.draw.rect(window,pg_img_loader.color,(730,240-18,18,18))
+    pg.draw.circle(window,button_color,(730+18,240-18),18)#3
+    pg.draw.rect(window,pg_img_loader.color,(830-18,240-18,18,18))
+    pg.draw.circle(window,button_color,(830-18,240-18),18)#4
+    animator.blinking(pg_img_loader.font_36,"ROLL",0,0,0,(750,178))
+    if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+        if button_rect.collidepoint(event.pos) and not is_clicked:
+            is_clicked = True
+            if is_both_players_on_same_square:
+                p2.pos_y-=2
+                p1.pos_y+=2
+                is_both_players_on_same_square=0
+            player_change.swapper(p1,p2)
+            if p1.square_no==p2.square_no:
+                is_both_players_on_same_square=1
+                p1.pos_y-=2
+                p2.pos_y+=2
+    if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+        is_clicked = False
+    clockk.tick(fps)
 class img_loader:
     color=[180,180,195]
     def load(self):
@@ -72,17 +107,6 @@ class img_loader:
     font_40 = pg.font.Font(None,40)
     font_36 = pg.font.Font(None, 36)
     font_70 = pg.font.Font(None, 70)
-    def roll_button(self):
-            self.button_rect=pg.draw.rect(window ,button_color, (button_x, button_y, button_width, button_height))
-            pg.draw.rect(window,pg_img_loader.color,(730,140,18,18))
-            pg.draw.circle(window,button_color,(730+18,140+18),18)#1
-            pg.draw.rect(window,pg_img_loader.color,(830-18,140,18,18))
-            pg.draw.circle(window,button_color,(830-18,140+18),18)#2
-            pg.draw.rect(window,pg_img_loader.color,(730,240-18,18,18))
-            pg.draw.circle(window,button_color,(730+18,240-18),18)#3
-            pg.draw.rect(window,pg_img_loader.color,(830-18,240-18,18,18))
-            pg.draw.circle(window,button_color,(830-18,240-18),18)#4
-            animator.blinking(pg_img_loader.font_36,"ROLL",0,0,0,(750,178))
 class player:
     pos_x=188
     pos_y=428
@@ -149,30 +173,18 @@ class dice:
     dice_6=pg.transform.smoothscale(pg.image.load("resources/dice_06.png"),[100,100])
     dice_tuple=(dice_1,dice_2,dice_3,dice_4,dice_5,dice_6)
     def rolling(self,src):
-        self.i,self.f=0.005,1/1.2
-        while True:
+        for self.i in range(6):
             src.load()
             p1.img_load()
             p2.img_load()
             self.x=725
             self.y=355
             window.blit(self.dice_tuple[randint(0,5)],(self.x,self.y))
-            roll_text=pg_img_loader.font_36.render("  DICE", True, (50,50,50))
+            roll_text=pg_img_loader.font_36.render("   DICE", True, (50,50,50))
             window.blit(roll_text,(730,325))
             pg.display.flip()
-            sleep(self.i)
-            if self.i<=0.005:
-                self.f*=1.2
-            if self.i>=0.8 :
-                self.f*=1/1.2
-            if self.i>=0.8 and self.f==1/1.2:
-                break
-            print(self.i,self.f)
-            self.i*=self.f
-        src.load()
-        p1.img_load()
-        p2.img_load()
-        del self.i,self.f
+            sleep(0.5)
+        del self.i
         return self.roll(src)
     def roll(self,src):
         self.roll_no=randint(0,5)
@@ -258,49 +270,15 @@ pg_img_loader=img_loader()
 is_both_players_on_same_square=1
 p1.pos_y-=2
 p2.pos_y+=2
-def quiting():
-    global running
-    while running:
-        if pg.event.get().type==pg.QUIT:
-                running=False
-t1=threading.Thread(target=quiting)
-t1.start()
-
 while running:
     for event in pg.event.get():
-        if event.type==pg.QUIT:running=False
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            if pg_img_loader.button_rect.collidepoint(event.pos) and not is_clicked:
-                is_clicked = True
-                if is_both_players_on_same_square:
-                    p2.pos_y-=2
-                    p1.pos_y+=2
-                    is_both_players_on_same_square=0
-                player_change.swapper(p1,p2)
-                if p1.square_no==p2.square_no:
-                    is_both_players_on_same_square=1
-                    p1.pos_y-=2
-                    p2.pos_y+=2
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            is_clicked = False
+        if event.type==pg.QUIT:
+            running=False
     if not is_started:
         loader.load()
-        continue
-    if(p1.square_no>=100):
-        win()
-        sleep(1)
-        continue
-    if(p2.square_no>=100):
-        win()
-        sleep(1)
-        continue
-    pg_img_loader.load()
-    pg_img_loader.roll_button()
-    p1.img_load()
-    p2.img_load()
-    pg.display.flip()
+    else:
+        main_loop()
+        pg.display.flip()
 
-t1.join()
-if running==False:
-    pg.quit()
-    print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")
+pg.quit()
+print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")
