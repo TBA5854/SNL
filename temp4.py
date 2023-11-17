@@ -1,5 +1,6 @@
 import pygame as pg
 from random import randint
+# play again and quit with confirmation boxes
 
 pg.init()
 fps=60

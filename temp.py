@@ -50,7 +50,7 @@ while running:
     
 
     window.fill((100,150,100))
-    window.blit(font_36.render("user_name", True, (255,255,255)),(450,320))
+    window.blit(font_36.render(user_name, True, (255,255,255)),(450,320))
 
 
 

@@ -1,7 +1,7 @@
 from re import T
 import pygame as pg
 from random import randint
-
+#dice loop fix
 pg.init()
 fps=60
 is_both_players_on_same_square=0
@@ -125,6 +125,7 @@ class dice:
                 return self.roll(src)
             print(self.i,self.f)
             self.i*=self.f
+            
     def roll(self,src):
         self.roll_no=randint(0,5)
         for self.i in range (3):
@@ -134,14 +135,14 @@ class dice:
             roll_text=pg_img_loader.font_36.render("  DICE", True, (50,50,50))
             window.blit(roll_text,(730,325))
             pg.display.flip()
-            sleep(1)
+            sleep(0.8)
             src.load()
             p1.img_load()
             p2.img_load()
             roll_text=pg_img_loader.font_36.render("  DICE", True, (50,50,50))
             window.blit(roll_text,(730,325))
             pg.display.flip()
-            sleep(1)
+            sleep(0.8)
         del self.i
         return self.roll_no+1
     

@@ -1,7 +1,7 @@
 [x]1.fix main loop
-[*]2.add loading screen
-[*]3.fix animation of dice
-[ ]4.if user clicks close when game is loading , then it should close immmediately ==> integrate for loop inside main loop with a extra var
+[**]2.add loading screen
+[**]3.fix animation of dice
+[**]4.if user clicks close when game is loading , then it should close immmediately ==> integrate for loop inside main loop with a extra var
 [*]5.confirmation dialog box
 
 
@@ -41,3 +41,23 @@ and add space bar to roll
 and merge all 
 check and review 
 then its done
+
+update 23:46 17/11/23
+merged dice animation fix and loop fix
+merged loading screen
+merged enter name screen
+need to do:
+merge play again and quit and confirmation boxessss 
+
+
+and for bug fixes :
+swapper , dice roll fix is clashing with it
+yeah , fix adding roll function , somethings so broken there
+name text is having null value for whatever reason
+
+also need to do for 2 player:
+name screen
+1p or 2p box
+then just change swapper and it should be good to go
+
+going for 1 month halt in this , as my sems are fast approaching , till that good bye

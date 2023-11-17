@@ -16,7 +16,7 @@ if choice:
     name_1=input("Enter Player 1 Name \n>>")
     name_2=input("Enter Player 2 Name \n>>")
 else:
-    name_1="TBA"#input("Enter Player 1 Name \n>>")
+    # name_1="TBA"#input("Enter Player 1 Name \n>>")
     name_2="Computer"
 ladder={4:25,21:39,29:74,43:76,63:80,71:89}
 snake={30:7,47:15,56:19,73:51,82:42,92:75,98:55}
@@ -30,17 +30,38 @@ running = True
 is_started=False
 
 class loading_screen:
-    def __init__(self):
-        pass
+    r=g=b=255
+    title="SNL"
+    temp=temp1=1
     def load(self):
         global is_started
         is_started=True
+        animator.lbl(font_70,self.title,255,255,255,(425,100))
+        if animator.lbl_i==len(self.title):
+            if self.temp:
+                self.temp=0
+                pg.display.flip()
+                sleep(1)
+            self.r,self.g,self.b=animator.fade_in(font_36,"By TBA5854",self.r,self.g,self.b,(500,150))
+            if animator.faded:
+                if self.temp1:
+                    self.temp1=0
+                    pg.display.flip()
+                    sleep(0.25)
+                animator.blinking(font_36,"PRESS ENTER",255,255,255,(350,450))
 
 loader=loading_screen()
 
+
 class animations:
     i=0
+    m=0
     t=3
+    lbl_i=0
+    lbl_t=0
+    faded=False
+    faded_start=False
+    faded_t=0
     blinking_i=0
     blinking_t=1
     blinking_q=0
@@ -50,12 +71,44 @@ class animations:
         self.blinking_i+=self.blinking_t
         if self.blinking_t>0:window.blit(font_engine.render(text,True,[r,g,b]),coords)
     def breathing(self,font_engine,text,r,g,b,coords):
-        if max(r,g,b)>=255:self.t=-1*3
-        if min(r,g,b)<=0:self.t=+1*3
-        self.i+=self.t
-        window.blit(font_engine.render(text,True,[r+self.i,g+self.i,b+self.i]),coords)
-
-
+        if max(r,g,b)>=252:
+            self.t=-1*4
+        if min(r,g,b)<=4:
+            self.t=+1*4
+        r+=self.t
+        g+=self.t
+        b+=self.t
+        print(r,g,b,self.t)
+        window.blit(font_engine.render(text,True,[r,g,b]),coords)
+        return r,g,b
+    def fade_in(self,font_engine,text,r,g,b,coords):
+        if self.faded_start and self.faded_t>0:
+            self.faded=True
+            window.blit(font_engine.render(text,True,[r,g,b]),coords)
+            return r,g,b
+        if self.m<max(r,g,b):self.m=max(r,g,b)
+        if max(r,g,b)>=252:
+            self.faded_t=-1*4
+        if min(r,g,b)<=4:
+            self.faded_t=+1*4
+        r+=self.faded_t
+        g+=self.faded_t
+        b+=self.faded_t
+        print(r,g,b,self.faded_t)
+        if self.faded_start or self.faded_t>0:
+            window.blit(font_engine.render(text,True,[r,g,b]),coords)
+            if self.m==max(r,g,b):
+                self.faded_start=True
+        return r,g,b
+    def lbl(self,font_engine,text,r,g,b,coords):
+        if self.lbl_t==90:
+            if self.lbl_i != len(text):
+                self.lbl_i+=1
+            self.lbl_t=0
+        else:self.lbl_t+=1
+        window.blit(font_engine.render(text[:self.lbl_i],True,[r,g,b]),coords)
+font_70 = pg.font.Font(None, 70)
+font_36 = pg.font.Font("resources/test.ttf", 36)
 animator=animations()
 
 class img_loader:
@@ -148,9 +201,15 @@ class dice:
     dice_5=pg.transform.smoothscale(pg.image.load("resources/dice_05.png"),[100,100])
     dice_6=pg.transform.smoothscale(pg.image.load("resources/dice_06.png"),[100,100])
     dice_tuple=(dice_1,dice_2,dice_3,dice_4,dice_5,dice_6)
-    def rolling(self,src):
+    is_rolling=False
+    rolled=False
+
+    def roller(self):
+        self.is_rolling=True
         self.i,self.f=0.005,1/1.2
-        while True:
+    
+    def rolling(self,src):
+        if self.is_rolling:
             src.load()
             p1.img_load()
             p2.img_load()
@@ -166,13 +225,16 @@ class dice:
             if self.i>=0.8 :
                 self.f*=1/1.2
             if self.i>=0.8 and self.f==1/1.2:
-                break
+                self.is_rolling=False
+                self.rolled=True
+                src.load()
+                p1.img_load()
+                p2.img_load()
+                del self.i,self.f
+                return self.roll(src)
+            print(self.i,self.f)
             self.i*=self.f
-        src.load()
-        p1.img_load()
-        p2.img_load()
-        del self.i,self.f
-        return self.roll(src)
+ 
     def roll(self,src):
         self.roll_no=randint(0,5)
         for self.i in range (3):
@@ -238,7 +300,7 @@ else:
     player_change=interchange_computer()
 p1=player()
 p1.path="resources/player_1.png"
-p1.name=name_1
+# p1.name=name_1
 turn_player=p1.name
 p2=player()
 p2.path="resources/player_2.png"
@@ -255,19 +317,69 @@ pg_img_loader=img_loader()
 is_both_players_on_same_square=1
 p1.pos_y-=2
 p2.pos_y+=2
-def quiting():
-    global running
+running_load=running_name=False
+font_70 = pg.font.Font(None, 70)
+font_36 = pg.font.Font("resources/test.ttf", 36)
+r=g=b=255
+title="SNL"
+temp=temp1=1
+
+if not is_started:
+    user_name=""
     while running:
-        if pg.event.get().type==pg.QUIT:
+        if not running_name:break
+        for event in pg.event.get():  
+            if event.type==pg.QUIT:
                 running=False
-t1=threading.Thread(target=quiting)
-t1.start()
+            if event.type==pg.KEYDOWN:
+                if event.key==pg.K_RETURN:
+                    running_name=False
+                    break
+                if event.key==pg.K_BACKSPACE:
+                    if user_name!=[]:
+                        user_name=user_name[:-1]
+                    continue
+                user_name+=event.unicode
+        window.fill((0,0,0))
+        window.blit(font_36.render(user_name, True, (255,255,255)),(450,320))
+        pg.display.flip()
+        clockk.tick(fps)
+    p1.name=name_1=user_name
+
+
+    while running:
+        if not running_load:break
+        for event in pg.event.get():
+            if event.type==pg.QUIT:
+                running=False
+            if event.type==pg.KEYDOWN and event.key==pg.K_RETURN:
+                running_load=False
+                break
+        window.fill((0,0,0))
+
+        animator.lbl(font_70,title,255,255,255,(425,100))
+        if animator.lbl_i==len(title):
+            if temp:
+                temp=0
+                pg.display.flip()
+                sleep(1)
+            r,g,b=animator.fade_in(font_36,"By TBA5854",r,g,b,(500,150))
+            if animator.faded:
+                if temp1:
+                    temp1=0
+                    pg.display.flip()
+                    sleep(0.25)
+                animator.blinking(font_36,"PRESS ENTER",255,255,255,(350,450))
+        pg.display.flip()
+        clockk.tick(fps)
+
+
 
 while running:
     for event in pg.event.get():
-        if event.type==pg.QUIT:running=False
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            if pg_img_loader.button_rect.collidepoint(event.pos) and not is_clicked:
+        if event.type==pg.QUIT:
+            running=False
+        if (event.type==pg.KEYDOWN and event.key==pg.K_SPACE) and (event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and pg_img_loader.button_rect.collidepoint(event.pos) and not is_clicked):
                 is_clicked = True
                 if is_both_players_on_same_square:
                     p2.pos_y-=2
@@ -280,9 +392,6 @@ while running:
                     p2.pos_y+=2
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             is_clicked = False
-    if not is_started:
-        loader.load()
-        continue
     if(p1.square_no>=100):
         win()
         sleep(1)
@@ -297,7 +406,5 @@ while running:
     p2.img_load()
     pg.display.flip()
 
-t1.join()
-if running==False:
-    pg.quit()
-    print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")
+pg.quit()
+print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")

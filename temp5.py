@@ -1,6 +1,6 @@
 from time import sleep
 import pygame as pg
-
+#loading screen
 pg.init()
 fps=60
 clockk=pg.time.Clock()

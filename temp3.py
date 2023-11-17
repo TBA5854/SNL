@@ -1,7 +1,7 @@
 from re import T
 import pygame as pg
 from random import randint
-
+#dice animation
 pg.init()
 fps=60
 is_both_players_on_same_square=0
