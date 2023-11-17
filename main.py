@@ -167,7 +167,6 @@ class dice:
                 self.f*=1/1.2
             if self.i>=0.8 and self.f==1/1.2:
                 break
-            print(self.i,self.f)
             self.i*=self.f
         src.load()
         p1.img_load()
@@ -245,8 +244,6 @@ p2=player()
 p2.path="resources/player_2.png"
 p2.name=name_2
 dicee=dice()
-p2.pos_x=188
-p2.pos_y=428
 button_x=730
 button_y=140
 button_height=100

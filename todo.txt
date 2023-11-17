@@ -1,8 +1,8 @@
 [x]1.fix main loop
-[]2.add loading screen
+[*]2.add loading screen
 [*]3.fix animation of dice
-[]4.if user clicks close when game is loading , then it should close immmediately ==> integrate for loop inside main loop with a extra var
-[]5.confirmation dialog box
+[ ]4.if user clicks close when game is loading , then it should close immmediately ==> integrate for loop inside main loop with a extra var
+[*]5.confirmation dialog box
 
 
 
@@ -16,8 +16,28 @@ probably later is a great idea
 scrap 1 ; moving to a fn kind of wrecks everything
 5 is easy , just need to write when im not procastinating
 
-update 9:11 16/11/24
+update 9:11 16/11/23
 fixed dice animation
 need to fix loop and need a idea to think for 4
 i could add a play again and quit box
 loading screen itself is kinda ready as animations are done , start font engines , write text add a box to start
+
+update 11:19 16/11/23
+found out bugs in animations 
+confirmationbox ready
+adding loading scrren but tired 
+gonna take rest now
+
+update 10:46 17/11/23
+done with loading screen 
+next is confirmationbox , once text is added to it , i will start on the most frustrating threads thing , if it fails , i might even may need to redo the loop
+thinking of it why not add a counter var and just remove for loop and add if conditions , that might be easier , but its a future me problem
+
+update 16:02 17/11/23
+done with roll animation
+blinker is left 
+need to add not rolling condition to key check
+and add space bar to roll 
+and merge all 
+check and review 
+then its done
