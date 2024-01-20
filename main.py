@@ -188,7 +188,7 @@ def win():
     pg.draw.rect(window ,(205,205,205), (0, 120, 1000,400))
     if p1.square_no>=100:
         win_text = p1.name+" Wins !!!"
-    elif p2.square_no>=100:
+    else:
         win_text = p2.name+" Wins !!!"
     text_surface2 = img_loader.font_70.render(win_text, True, (randint(0,255), randint(0,255), randint(0,255)))
     window.blit(text_surface2,(270,290))
@@ -227,13 +227,11 @@ class dice:
             if self.i>=0.8 and self.f==1/1.2:
                 self.is_rolling=False
                 self.rolled=True
-                src.load()
-                p1.img_load()
-                p2.img_load()
-                del self.i,self.f
-                return self.roll(src)
-            print(self.i,self.f)
-            self.i*=self.f
+            src.load()
+            p1.img_load()
+            p2.img_load()
+            del self.i,self.f
+            return self.roll(src)
  
     def roll(self,src):
         self.roll_no=randint(0,5)
