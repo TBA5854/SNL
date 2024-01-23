@@ -1,3 +1,4 @@
+from calendar import c
 from pdb import run
 import pygame as pg
 from time import sleep
@@ -8,15 +9,15 @@ import threading
 
 
 
-choice=0#int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
+choice=1#int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
 while choice not in [0,1]:
-    print("\nINVALID INPUT!!!\n")
+    print("\nINVALID INPUT!!!\n")    
     choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
 if choice:
-    name_1=input("Enter Player 1 Name \n>>")
-    name_2=input("Enter Player 2 Name \n>>")
+    name_1="1"#input("Enter Player 1 Name \n>>")
+    name_2="2"#input("Enter Player 2 Name \n>>")
 else:
-    # name_1="TBA"#input("Enter Player 1 Name \n>>")
+    name_1="TBA"#input("Enter Player 1 Name \n>>")
     name_2="Computer"
 ladder={4:25,21:39,29:74,43:76,63:80,71:89}
 snake={30:7,47:15,56:19,73:51,82:42,92:75,98:55}
@@ -52,6 +53,28 @@ class loading_screen:
 
 loader=loading_screen()
 
+def conf():
+    no=pg.draw.rect(window,(255, 141, 141),(200,450,250,75))
+    yes=pg.draw.rect(window,(137, 255, 159),(500,450,250,75))
+    running1=True
+    while running1:
+        for event in pg.event.get():
+            if event.type==pg.QUIT:
+                running=False
+            if event.type==pg.MOUSEBUTTONDOWN:
+                if event.button==1:
+                    mouse_pos=pg.mouse.get_pos()
+                    if no.collidepoint(mouse_pos):
+                        print("No")
+                        running1=False
+                        return False
+                    if yes.collidepoint(mouse_pos):
+                        print("Yes")
+                        return True
+        pg.draw.rect(window,(128,128,128,128),(0,0,1000,720))
+        no=pg.draw.rect(window,(255, 141, 141),(200,450,250,75))
+        yes=pg.draw.rect(window,(137, 255, 159),(500,450,250,75))
+        pg.display.flip()
 
 class animations:
     i=0
@@ -203,7 +226,7 @@ class dice:
     dice_tuple=(dice_1,dice_2,dice_3,dice_4,dice_5,dice_6)
     is_rolling=False
     rolled=False
-
+    i,f=0.005,1/1.2
     def roller(self):
         self.is_rolling=True
         self.i,self.f=0.005,1/1.2
@@ -230,8 +253,10 @@ class dice:
             src.load()
             p1.img_load()
             p2.img_load()
-            del self.i,self.f
+            # del self.i,self.f
             return self.roll(src)
+        else:
+            return 0
  
     def roll(self,src):
         self.roll_no=randint(0,5)
@@ -266,6 +291,7 @@ class interchange_2_player:
             turn_player=p1.name
         color_check()
 class interchange_computer:
+    turn=1
     def swapper(self,p1,p2):
         global turn_player
         p1.move_multiple(dicee.rolling(pg_img_loader),p2,pg_img_loader)
@@ -299,7 +325,6 @@ else:
 p1=player()
 p1.path="resources/player_1.png"
 # p1.name=name_1
-turn_player=p1.name
 p2=player()
 p2.path="resources/player_2.png"
 p2.name=name_2
@@ -315,7 +340,8 @@ pg_img_loader=img_loader()
 is_both_players_on_same_square=1
 p1.pos_y-=2
 p2.pos_y+=2
-running_load=running_name=False
+#disabling load and name screen
+running_load=running_name=True
 font_70 = pg.font.Font(None, 70)
 font_36 = pg.font.Font("resources/test.ttf", 36)
 r=g=b=255
@@ -323,26 +349,54 @@ title="SNL"
 temp=temp1=1
 
 if not is_started:
-    user_name=""
-    while running:
-        if not running_name:break
+    user_name_1=""
+    user_name_2=""
+    while running_name:
+        if not running_name:
+            break
         for event in pg.event.get():  
             if event.type==pg.QUIT:
-                running=False
+                running=running_name=False
+                choice=0
             if event.type==pg.KEYDOWN:
                 if event.key==pg.K_RETURN:
                     running_name=False
                     break
                 if event.key==pg.K_BACKSPACE:
-                    if user_name!=[]:
-                        user_name=user_name[:-1]
+                    if user_name_1!=[]:
+                        user_name_1=user_name_1[:-1]
                     continue
-                user_name+=event.unicode
+                user_name_1+=event.unicode
         window.fill((0,0,0))
-        window.blit(font_36.render(user_name, True, (255,255,255)),(450,320))
+        window.blit(font_36.render("ENTER PLAYER 1 NAME", True, (255,255,255)),(285,120))
+        window.blit(font_36.render(user_name_1, True, (255,255,255)),(450,320))
         pg.display.flip()
         clockk.tick(fps)
-    p1.name=name_1=user_name
+    p1.name=user_name_1
+    if choice:
+        running_name_2=True
+        while running_name_2:
+            if not running_name_2:
+                break
+            for event in pg.event.get():  
+                if event.type==pg.QUIT:
+                    running=running_name_2=False
+                if event.type==pg.KEYDOWN:
+                    if event.key==pg.K_RETURN:
+                        running_name_2=False
+                        break
+                    if event.key==pg.K_BACKSPACE:
+                        if user_name_2!=[]:
+                            user_name_2=user_name_2[:-1]
+                        continue
+                    user_name_2+=event.unicode
+            window.fill((0,0,0))
+            window.blit(font_36.render("ENTER PLAYER 2 NAME", True, (255,255,255)),(285,120))
+            window.blit(font_36.render(user_name_2, True, (255,255,255)),(450,320))
+            pg.display.flip()
+            clockk.tick(fps)
+        p2.name=user_name_2
+
 
 
     while running:
@@ -371,18 +425,44 @@ if not is_started:
         pg.display.flip()
         clockk.tick(fps)
 
-
+turn_player=p1.name
+quit_box=pg.draw.rect(window,(255, 141, 141),(100,100,250,75))
+play_again=pg.draw.rect(window,(137, 255, 159),(100,200,250,75))
 
 while running:
     for event in pg.event.get():
         if event.type==pg.QUIT:
             running=False
-        if (event.type==pg.KEYDOWN and event.key==pg.K_SPACE) and (event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and pg_img_loader.button_rect.collidepoint(event.pos) and not is_clicked):
+        if event.type==pg.MOUSEBUTTONDOWN:
+            if event.button==1:
+                mouse_pos=pg.mouse.get_pos()
+                if quit_box.collidepoint(mouse_pos):
+                    if conf():
+                        pg.display.flip()#cqll loader here
+                        print("Quit")
+                        running=False
+                if play_again.collidepoint(mouse_pos):
+                    if conf():
+                        p1.square_no=p2.square_no=1
+                        p1.pos_x=188
+                        p1.pos_y=428
+                        p2.pos_x=188
+                        p2.pos_y=428
+                        turn_player=p1.name
+                        color_check()
+                        player_change.turn=1
+                        p1.img_load()
+                        p2.img_load()
+                        pg_img_loader.load()
+                        pg.display.flip()#call loader here
+                        print("Play Again")
+        if (event.type==pg.KEYDOWN and event.key==pg.K_SPACE) or (event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and pg_img_loader.button_rect.collidepoint(event.pos) and not is_clicked):
                 is_clicked = True
                 if is_both_players_on_same_square:
                     p2.pos_y-=2
                     p1.pos_y+=2
                     is_both_players_on_same_square=0
+                dicee.roller()
                 player_change.swapper(p1,p2)
                 if p1.square_no==p2.square_no:
                     is_both_players_on_same_square=1
@@ -402,6 +482,8 @@ while running:
     pg_img_loader.roll_button()
     p1.img_load()
     p2.img_load()
+    quit_box=pg.draw.rect(window,(255, 141, 141),(100,100,250,75))
+    play_again=pg.draw.rect(window,(137, 255, 159),(100,200,250,75))
     pg.display.flip()
 
 pg.quit()

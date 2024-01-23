@@ -61,3 +61,39 @@ name screen
 then just change swapper and it should be good to go
 
 going for 1 month halt in this , as my sems are fast approaching , till that good bye
+
+update : 3:36 am 23.1.24
+I'm back and im gonna finish this no matter what , i have gone through the code and realised i had changed some const for quick runnings
+the dice anim is toast , need to change const values
+swapper is fixed
+im gonna fix name later , lemme start on adding confirmation boxes
+
+update :5:24am 23.1.24
+confirmationbox is ready functionally , everything seems to work
+
+things to fix:
+name not assigning in name screen
+conf box locations
+conf , quit , play agin , reset boxes label text
+
+things to check:
+2player 
+
+update : 5:35am 23.1.24
+2 player ready
+
+starting name bug fix , need to do name screen for 2 players
+
+update :5:56am 23.1.24
+2player name screen ready
+name bug fix done
+so 2 player has been fixed so far
+things to do:
+conf box locations
+conf , quit , play agin , reset boxes label text
+Add text to name screen
+
+
+update :6:07am 23.1.24
+name screen text added
+only conf is remaining ,LETS'GOOOOOOOO
