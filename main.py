@@ -1,24 +1,18 @@
-from calendar import c
-from pdb import run
 import pygame as pg
 from time import sleep
 from random import randint
-import threading
 
 
-
-
-
-choice=1#int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
+choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
 while choice not in [0,1]:
     print("\nINVALID INPUT!!!\n")    
     choice=int(input("Do you want to play 2 player or player vs computer : (0 for computer and 1 for 2 player)\n>>"))
-if choice:
-    name_1="1"#input("Enter Player 1 Name \n>>")
-    name_2="2"#input("Enter Player 2 Name \n>>")
+""" if choice:
+    name_1=input("Enter Player 1 Name \n>>")
+    name_2=input("Enter Player 2 Name \n>>")
 else:
-    name_1="TBA"#input("Enter Player 1 Name \n>>")
-    name_2="Computer"
+    name_1=input("Enter Player 1 Name \n>>")
+    name_2="Computer" """
 ladder={4:25,21:39,29:74,43:76,63:80,71:89}
 snake={30:7,47:15,56:19,73:51,82:42,92:75,98:55}
 pg.init()
@@ -65,15 +59,17 @@ def conf():
                 if event.button==1:
                     mouse_pos=pg.mouse.get_pos()
                     if no.collidepoint(mouse_pos):
-                        print("No")
                         running1=False
                         return False
                     if yes.collidepoint(mouse_pos):
-                        print("Yes")
                         return True
-        pg.draw.rect(window,(128,128,128,128),(0,0,1000,720))
+        
+        pg.draw.rect(window,(181, 82, 82),(0,0,1000,720))
         no=pg.draw.rect(window,(255, 141, 141),(200,450,250,75))
         yes=pg.draw.rect(window,(137, 255, 159),(500,450,250,75))
+        window.blit(pg.font.Font(None, 70).render("CONFIRM ?", True, (255, 243, 213)), (350,150))
+        window.blit(pg.font.Font(None,50).render("YES", True, (55,139,99)), (593,473))
+        window.blit(pg.font.Font(None,50).render("NO  ", True, (255,0,61)), (300,472))
         pg.display.flip()
 
 class animations:
@@ -101,7 +97,6 @@ class animations:
         r+=self.t
         g+=self.t
         b+=self.t
-        print(r,g,b,self.t)
         window.blit(font_engine.render(text,True,[r,g,b]),coords)
         return r,g,b
     def fade_in(self,font_engine,text,r,g,b,coords):
@@ -117,7 +112,6 @@ class animations:
         r+=self.faded_t
         g+=self.faded_t
         b+=self.faded_t
-        print(r,g,b,self.faded_t)
         if self.faded_start or self.faded_t>0:
             window.blit(font_engine.render(text,True,[r,g,b]),coords)
             if self.m==max(r,g,b):
@@ -133,17 +127,17 @@ class animations:
 font_70 = pg.font.Font(None, 70)
 font_36 = pg.font.Font("resources/test.ttf", 36)
 animator=animations()
-
+player_turn_color=[192, 192, 192]
 class img_loader:
-    color=[180,180,195]
+    color=[97,97,97]
     def load(self):
         window.fill(self.color)
         background_image=pg.image.load("resources/snl_board.jpeg")
         image=pg.transform.smoothscale(background_image,[360,360])
         window.blit(image, (180, 100))
-        title = self.font_40.render("SNAKE AND LADDERS", True, (3,152,60))
+        title = self.font_40.render("SNAKE AND LADDERS", True, (237, 224, 200))
         window.blit(title,(230,50))
-        whose_turn=self.font_40.render("TURN : "+turn_player, True, (150,60,150))
+        whose_turn=self.font_40.render("TURN : "+turn_player, True, player_turn_color)
         window.blit(whose_turn,(290,520))
     font_40 = pg.font.Font(None,40)
     font_36 = pg.font.Font(None, 36)
@@ -215,6 +209,10 @@ def win():
         win_text = p2.name+" Wins !!!"
     text_surface2 = img_loader.font_70.render(win_text, True, (randint(0,255), randint(0,255), randint(0,255)))
     window.blit(text_surface2,(270,290))
+    quit_box=pg.draw.rect(window,(255, 141, 141),(550,565,250,75))
+    window.blit(pg.font.Font(None, 36).render("QUIT", True, (255,0,61)), (647,593))
+    play_again=pg.draw.rect(window,(137, 255, 159),(125,565,250,75))
+    window.blit(pg.font.Font(None, 36).render("RESET BOARD", True, (6, 85, 53)), (161,593))
     pg.display.flip()
 class dice:
     dice_1=pg.transform.smoothscale(pg.image.load("resources/dice_01.png"),[100,100])
@@ -232,7 +230,8 @@ class dice:
         self.i,self.f=0.005,1/1.2
     
     def rolling(self,src):
-        if self.is_rolling:
+        self.i,self.f=0.005,1/1.2
+        while True:
             src.load()
             p1.img_load()
             p2.img_load()
@@ -248,15 +247,13 @@ class dice:
             if self.i>=0.8 :
                 self.f*=1/1.2
             if self.i>=0.8 and self.f==1/1.2:
-                self.is_rolling=False
-                self.rolled=True
-            src.load()
-            p1.img_load()
-            p2.img_load()
-            # del self.i,self.f
-            return self.roll(src)
-        else:
-            return 0
+                break
+            self.i*=self.f
+        src.load()
+        p1.img_load()
+        p2.img_load()
+        del self.i,self.f
+        return self.roll(src)
  
     def roll(self,src):
         self.roll_no=randint(0,5)
@@ -264,14 +261,14 @@ class dice:
             self.x=725
             self.y=355
             window.blit(self.dice_tuple[self.roll_no],(self.x,self.y))
-            roll_text=pg_img_loader.font_36.render("  DICE", True, (50,50,50))
+            roll_text=pg_img_loader.font_36.render("  DICE", True, (237, 224, 200))
             window.blit(roll_text,(730,325))
             pg.display.flip()
             sleep(1)
             src.load()
             p1.img_load()
             p2.img_load()
-            roll_text=pg_img_loader.font_36.render("  DICE", True, (50,50,50))
+            roll_text=pg_img_loader.font_36.render("  DICE", True, (237, 224, 200))
             window.blit(roll_text,(730,325))
             pg.display.flip()
             sleep(1)
@@ -290,6 +287,8 @@ class interchange_2_player:
             self.turn+=1
             turn_player=p1.name
         color_check()
+
+
 class interchange_computer:
     turn=1
     def swapper(self,p1,p2):
@@ -305,15 +304,21 @@ class interchange_computer:
         color_check()
         if(p2.square_no>=100):
             return
+
+
 def color_check ():
+    global player_turn_color
     if p1.square_no>p2.square_no:
-        pg_img_loader.color=[180,180,247]
+        pg_img_loader.color=[36,81,161]
+        player_turn_color=[102, 153, 204]
     elif p1.square_no<p2.square_no:
-        pg_img_loader.color=[247,180,180]
+        pg_img_loader.color=[161, 36, 62]
+        player_turn_color= [255, 229, 204]
     elif p1.square_no==p2.square_no:
-        pg_img_loader.color=[180,180,180]
+        pg_img_loader.color=[51,51,51]
+        player_turn_color=[192, 192, 192]
     if p1.square_no>=100 or p2.square_no>=100:
-        pg_img_loader.color=[180,247,180]
+        pg_img_loader.color=[36, 113, 72]
     pg_img_loader.load()
     p1.img_load()
     p2.img_load()
@@ -324,29 +329,29 @@ else:
     player_change=interchange_computer()
 p1=player()
 p1.path="resources/player_1.png"
-# p1.name=name_1
 p2=player()
 p2.path="resources/player_2.png"
-p2.name=name_2
 dicee=dice()
 button_x=730
 button_y=140
 button_height=100
 button_width=100
-#button center ==> (780,190) , (141.4)
 button_color=(255,255,55)
 is_clicked=False
 pg_img_loader=img_loader()
 is_both_players_on_same_square=1
 p1.pos_y-=2
 p2.pos_y+=2
-#disabling load and name screen
 running_load=running_name=True
 font_70 = pg.font.Font(None, 70)
 font_36 = pg.font.Font("resources/test.ttf", 36)
 r=g=b=255
 title="SNL"
 temp=temp1=1
+
+
+
+
 
 if not is_started:
     user_name_1=""
@@ -426,8 +431,8 @@ if not is_started:
         clockk.tick(fps)
 
 turn_player=p1.name
-quit_box=pg.draw.rect(window,(255, 141, 141),(100,100,250,75))
-play_again=pg.draw.rect(window,(137, 255, 159),(100,200,250,75))
+quit_box=pg.draw.rect(window,(255, 141, 141),(550,565,550,375))
+play_again=pg.draw.rect(window,(137, 255, 159),(125,565,250,75))
 
 while running:
     for event in pg.event.get():
@@ -438,9 +443,10 @@ while running:
                 mouse_pos=pg.mouse.get_pos()
                 if quit_box.collidepoint(mouse_pos):
                     if conf():
-                        pg.display.flip()#cqll loader here
-                        print("Quit")
+                        pg.display.flip()
                         running=False
+                    else:
+                        pg_img_loader.load()
                 if play_again.collidepoint(mouse_pos):
                     if conf():
                         p1.square_no=p2.square_no=1
@@ -454,8 +460,10 @@ while running:
                         p1.img_load()
                         p2.img_load()
                         pg_img_loader.load()
-                        pg.display.flip()#call loader here
-                        print("Play Again")
+                        pg.display.flip()
+                    else:
+                        pg_img_loader.load()
+        if p1.square_no>=100 or p2.square_no>=100:break
         if (event.type==pg.KEYDOWN and event.key==pg.K_SPACE) or (event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and pg_img_loader.button_rect.collidepoint(event.pos) and not is_clicked):
                 is_clicked = True
                 if is_both_players_on_same_square:
@@ -482,9 +490,11 @@ while running:
     pg_img_loader.roll_button()
     p1.img_load()
     p2.img_load()
-    quit_box=pg.draw.rect(window,(255, 141, 141),(100,100,250,75))
-    play_again=pg.draw.rect(window,(137, 255, 159),(100,200,250,75))
+    quit_box=pg.draw.rect(window,(255, 141, 141),(550,565,250,75))
+    window.blit(pg.font.Font(None, 36).render("QUIT", True, (255,0,61)), (647,593))
+    play_again=pg.draw.rect(window,(137, 255, 159),(125,565,250,75))
+    window.blit(pg.font.Font(None, 36).render("RESET BOARD", True, (6, 85, 53)), (161,593))
     pg.display.flip()
 
 pg.quit()
-print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")
+print("\t\tThanks for playing\n\n\t\tA Program by TBA5854")     
